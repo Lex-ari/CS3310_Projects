@@ -4,7 +4,7 @@ public class Project_1_Matrix_Multiplication {
         int[][] test_array = new int[][]{{2, 2, 1, 1}, {2, 2, 1, 1}, {3, 3, 4, 4}, {3, 3, 4, 4}};
         Matrix test_matrix = new Matrix(test_array);
         Matrix test_matrix2 = new Matrix(test_array);
-        Matrix multiplied_matrix = traditional_matrix_multiplication(test_matrix, test_matrix2);
+        Matrix multiplied_matrix = divide_and_conquer(test_matrix, test_matrix2);
         System.out.println(test_matrix);
         System.out.println(multiplied_matrix);
     }
@@ -27,10 +27,18 @@ public class Project_1_Matrix_Multiplication {
         Matrix c = new Matrix(n, true);
         if (n == 1){
             c.setValue(0,0, a.getValue(0, 0) * b.getValue(0, 0));
+            return c;
         }
-        return new Matrix(0, false); //TODO: Finish implementation
-    }
+        Matrix[] a_quadrants = a.getQuadrants();    //TL, TR, BL, BR //11, 12, 21, 22
+        Matrix[] b_quadrants = b.getQuadrants();    //TL, TR, BL, BR
 
+        Matrix c11 = Matrix.addMatrix(divide_and_conquer(a_quadrants[0], b_quadrants[0]), divide_and_conquer(a_quadrants[1], b_quadrants[2]));
+        Matrix c12 = Matrix.addMatrix(divide_and_conquer(a_quadrants[0], b_quadrants[1]), divide_and_conquer(a_quadrants[1], b_quadrants[3]));
+        Matrix c21 = Matrix.addMatrix(divide_and_conquer(a_quadrants[2], b_quadrants[0]), divide_and_conquer(a_quadrants[3], b_quadrants[2]));
+        Matrix c22 = Matrix.addMatrix(divide_and_conquer(a_quadrants[2], b_quadrants[1]), divide_and_conquer(a_quadrants[3], b_quadrants[3]));
+        Matrix ret = new Matrix(new Matrix[]{c11, c12, c21, c22});
+        return ret;
+    }
 }
 
 class Matrix {
@@ -69,6 +77,31 @@ class Matrix {
         data = matrix.data.clone();
     }
 
+    /**
+     * Initializes a new Matrix given quadrants
+     * @param quadrants in TL, TR, BL, BR (2, 1, 3, 4) format
+     */
+    public Matrix(Matrix[] quadrants){
+        int n = quadrants[0].length() * 2;
+        int halfN = quadrants[0].length();
+        data = new int[n][n];
+        for (int row = 0; row < n; row++){
+            int first_quadrant_offset = 0;
+            if (row >= halfN){
+                first_quadrant_offset = 2;
+            }
+            int row_offset = row % halfN;
+            for (int col = 0; col < n; col++){
+                int second_quadrant_offset = first_quadrant_offset;
+                if (col >= halfN){
+                    second_quadrant_offset = first_quadrant_offset + 1;
+                }
+                int col_offset = col % halfN;
+                data[row][col] = quadrants[second_quadrant_offset].getValue(row_offset, col_offset);
+            }
+        }
+    }
+
     public void setValue(int row, int col, int value){
         data[row][col] = value;
     }
@@ -81,12 +114,12 @@ class Matrix {
         return data.length;
     }
 
-    public Matrix addMatrix(Matrix b){
+    public static Matrix addMatrix(Matrix a, Matrix b){
         int n = b.length();
         Matrix c = new Matrix(n, true);
         for (int row = 0; row < n; row++){
             for (int col = 0; col < n; col++){
-                c.setValue(row, col, getValue(row, col) + b.getValue(row, col));
+                c.setValue(row, col, a.getValue(row, col) + b.getValue(row, col));
             }
         }
         return c;
@@ -110,17 +143,18 @@ class Matrix {
         Matrix quad4 = new Matrix(halfN, true);
         quadrants = new Matrix[]{quad2, quad1, quad3, quad4};
         for (int row = 0; row < n; row++){
-            int quadrant_edit_offset = 0;
+            int first_quadrant_offset = 0;
             if (row >= halfN){
-                quadrant_edit_offset += 2;
+                first_quadrant_offset = 2;
             }
             int row_offset = row % halfN;
             for (int col = 0; col < n; col++){
+                int second_quadrant_offset = first_quadrant_offset;
                 if (col >= halfN){
-                    quadrant_edit_offset += 1;
+                    second_quadrant_offset = first_quadrant_offset + 1;
                 }
                 int col_offset = col % halfN;
-                quadrants[quadrant_edit_offset].setValue(row_offset, col_offset, getValue(row, col));
+                quadrants[second_quadrant_offset].setValue(row_offset, col_offset, getValue(row, col));
             }
         }
         return quadrants;
