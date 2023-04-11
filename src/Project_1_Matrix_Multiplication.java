@@ -1,13 +1,21 @@
-
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.Arrays;
 
+/***
+ * Code by Alex Mariano
+ * Design and Analysis of Algorithms (CS3310)
+ * Dr. Gilbert Young
+ * California State Polytechnic University, Pomona
+ * Project 1
+ */
+
 public class Project_1_Matrix_Multiplication {
 
     public static void main(String[] args) throws IOException {
 
+        //Test Initialization to ensure that the matrix multiplication works as expected
         int[][] test_array = new int[][]{{0, 1, 2, 3}, {3, 2, 1, 0}, {0, 1, 2, 3}, {3, 2, 1, 0}};
         int[][] test_array2 = new int[][]{{3, 2, 1, 0}, {0, 1, 2, 3}, {3, 2, 1, 0}, {0, 1, 2, 3}};
         System.out.println("==TEST==");
@@ -27,7 +35,7 @@ public class Project_1_Matrix_Multiplication {
         System.out.println("Strassen Method:");
         System.out.println(strassen(test_matrix, test_matrix2));
 
-
+        // test loggers in the event that the program crashes
         CustomFileWriter traditionalLog = new CustomFileWriter("traditionalLog");
         CustomFileWriter dAndCLog = new CustomFileWriter("dAndCLog");
         CustomFileWriter strassenLog = new CustomFileWriter("strassenLog");
@@ -83,7 +91,7 @@ public class Project_1_Matrix_Multiplication {
     /**
      * Sums a double[] of the time trials and returns the average by excluding the best and worst case
      * @param timeTrials
-     * @return
+     * @return long
      */
     public static long getTrialAverage(long[] timeTrials){
         long max = timeTrials[0];
@@ -103,6 +111,12 @@ public class Project_1_Matrix_Multiplication {
         return sum / (timeTrials.length - 2);
     }
 
+    /**
+     * Traditional Matrix Multiplication by summing each row multiplied by each col of a and b
+     * @param a
+     * @param b
+     * @return matrix c
+     */
     public static Matrix traditional_matrix_multiplication(Matrix a, Matrix b){
         int n = a.length();
         Matrix c = new Matrix(n, true);
@@ -116,6 +130,12 @@ public class Project_1_Matrix_Multiplication {
         return c;
     }
 
+    /**
+     * Divide and Conquer Algorithm, recursively divides itself into smaller sub problems.
+     * @param a
+     * @param b
+     * @return Matrix c
+     */
     public static Matrix divide_and_conquer(Matrix a, Matrix b){
         int n = a.length();
         Matrix c = new Matrix(n, true);
@@ -123,8 +143,8 @@ public class Project_1_Matrix_Multiplication {
             c.setValue(0,0, a.getValue(0, 0) * b.getValue(0, 0));
             return c;
         }
-        Matrix[] a_quadrants = a.getQuadrants();    //TL, TR, BL, BR //11, 12, 21, 22
-        Matrix[] b_quadrants = b.getQuadrants();    //TL, TR, BL, BR
+        Matrix[] a_quadrants = a.getEfficientQuadrants();    //TL, TR, BL, BR //11, 12, 21, 22
+        Matrix[] b_quadrants = b.getEfficientQuadrants();    //TL, TR, BL, BR
 
         Matrix c11 = Matrix.addMatrix(divide_and_conquer(a_quadrants[0], b_quadrants[0]), divide_and_conquer(a_quadrants[1], b_quadrants[2]));
         Matrix c12 = Matrix.addMatrix(divide_and_conquer(a_quadrants[0], b_quadrants[1]), divide_and_conquer(a_quadrants[1], b_quadrants[3]));
@@ -134,25 +154,31 @@ public class Project_1_Matrix_Multiplication {
         return ret;
     }
 
+    /**
+     * Strassen method
+     * @param a
+     * @param b
+     * @return
+     */
     public static Matrix strassen(Matrix a, Matrix b){
         int n = a.length();
         if (n <= 2){
             return divide_and_conquer(a, b);
         }
-        Matrix[] a_quadrants = a.getQuadrants();    //TL, TR, BL, BR        11, 12, 21, 22
-        Matrix[] b_quadrants = b.getQuadrants();    //TL, TR, BL, BR    ind 0   1   2   3
+        Matrix[] a_quadrants = a.getEfficientQuadrants();    //TL, TR, BL, BR        11, 12, 21, 22
+        Matrix[] b_quadrants = b.getEfficientQuadrants();    //TL, TR, BL, BR    ind 0   1   2   3
 
-        Matrix p = strassen(Matrix.addMatrix(a_quadrants[0], a_quadrants[3]), Matrix.addMatrix(b_quadrants[0], b_quadrants[3]));
-        Matrix q = strassen(Matrix.addMatrix(a_quadrants[2], a_quadrants[3]), b_quadrants[0]);
-        Matrix r = strassen(a_quadrants[0], Matrix.subMatrix(b_quadrants[1], b_quadrants[3]));
-        Matrix s = strassen(a_quadrants[3], Matrix.subMatrix(b_quadrants[2], b_quadrants[0]));
-        Matrix t = strassen(Matrix.addMatrix(a_quadrants[0], a_quadrants[1]), b_quadrants[3]);
-        Matrix u = strassen(Matrix.subMatrix(a_quadrants[2], a_quadrants[0]), Matrix.addMatrix(b_quadrants[0], b_quadrants[1]));
-        Matrix v = strassen(Matrix.subMatrix(a_quadrants[1], a_quadrants[3]), Matrix.addMatrix(b_quadrants[2], b_quadrants[3]));
-        Matrix c11 = Matrix.addMatrix(Matrix.addMatrix(p, v), Matrix.subMatrix(s, t));
-        Matrix c12 = Matrix.addMatrix(r, t);
-        Matrix c21 = Matrix.addMatrix(q, s);
-        Matrix c22 = Matrix.addMatrix(Matrix.addMatrix(p, u), Matrix.subMatrix(r, q));
+        Matrix p = strassen(Matrix.addMatrix(a_quadrants[0], a_quadrants[3]), Matrix.addMatrix(b_quadrants[0], b_quadrants[3])); //Strassen (A11+A22, B11+B22)
+        Matrix q = strassen(Matrix.addMatrix(a_quadrants[2], a_quadrants[3]), b_quadrants[0]); //Strassen (A21 + A22, B11)
+        Matrix r = strassen(a_quadrants[0], Matrix.subMatrix(b_quadrants[1], b_quadrants[3])); //Strassen(A11, B12 - B22)
+        Matrix s = strassen(a_quadrants[3], Matrix.subMatrix(b_quadrants[2], b_quadrants[0])); //Strassen(A22, B21 - B11)
+        Matrix t = strassen(Matrix.addMatrix(a_quadrants[0], a_quadrants[1]), b_quadrants[3]); //Strassen(A11 + A12, B22)
+        Matrix u = strassen(Matrix.subMatrix(a_quadrants[2], a_quadrants[0]), Matrix.addMatrix(b_quadrants[0], b_quadrants[1])); //Strassen(A21 - A11, B11 + B12)
+        Matrix v = strassen(Matrix.subMatrix(a_quadrants[1], a_quadrants[3]), Matrix.addMatrix(b_quadrants[2], b_quadrants[3])); //Strassen(A12 - A22, B21 + B22)
+        Matrix c11 = Matrix.addMatrix(Matrix.addMatrix(p, v), Matrix.subMatrix(s, t)); //P + S - T + V
+        Matrix c12 = Matrix.addMatrix(r, t); //  R + T
+        Matrix c21 = Matrix.addMatrix(q, s); // Q + S
+        Matrix c22 = Matrix.addMatrix(Matrix.addMatrix(p, u), Matrix.subMatrix(r, q)); // P + R - Q + U
         Matrix ret = new Matrix(new Matrix[]{c11, c12, c21, c22});
         return ret;
     }
@@ -162,7 +188,11 @@ class CustomFileWriter {
     File file;
     FileWriter fileWriter;
 
-
+    /**
+     * Constructor that allows initialization of a filewriter given a name.
+     * @param name
+     * @throws IOException
+     */
     public CustomFileWriter(String name) throws IOException {
         try {
             file = new File(name + ".txt");
@@ -177,6 +207,10 @@ class CustomFileWriter {
         }
     }
 
+    /**
+     * Simple write method to append to text file. close() repeated each time to save.
+     * @param message
+     */
     public void write(String message) {
         try {
             fileWriter = new FileWriter(file, true);
@@ -191,6 +225,9 @@ class CustomFileWriter {
 class Matrix {
     private int[][] data;
     private Matrix[] quadrants;
+    private int start_row = 0;
+    private int start_col = 0;
+    private int length;
 
     /**
      * Initializes a random Matrix of size n with values 0 - 10
@@ -206,6 +243,7 @@ class Matrix {
                 }
             }
         }
+        this.length = data.length;
     }
 
     /**
@@ -214,14 +252,18 @@ class Matrix {
      */
     public Matrix(int[][] data){
         this.data = data;
+        this.length = data.length;
     }
 
     /**
-     * Initializes a new Matrix given a preexisting matrix
+     * Constructor used for efficient copy
      * @param matrix
      */
-    public Matrix(Matrix matrix){
-        data = matrix.data;
+    public Matrix(Matrix matrix, int length, int row_offset, int col_offset){
+        this.data = matrix.data;
+        this.length = length;
+        this.start_row = row_offset;
+        this.start_col = col_offset;
     }
 
     /**
@@ -247,18 +289,19 @@ class Matrix {
                 data[row][col] = quadrants[second_quadrant_offset].getValue(row_offset, col_offset);
             }
         }
+        this.length = n;
     }
 
     public void setValue(int row, int col, int value){
-        data[row][col] = value;
+        data[row + start_row][col + start_col] = value;
     }
 
     public int getValue(int row, int col){
-        return data[row][col];
+        return data[row + start_row][col + start_col];
     }
 
     public int length(){
-        return data.length;
+        return length;
     }
 
     public static Matrix addMatrix(Matrix a, Matrix b){
@@ -315,6 +358,27 @@ class Matrix {
                 quadrants[second_quadrant_offset].setValue(row_offset, col_offset, getValue(row, col));
             }
         }
+        return quadrants;
+    }
+
+    /**
+     * Returns new matrices with ref to original matrix, but with different row and col offsets.
+     * TL, TR, BL, BR
+     * Quadrant 2, 1, 3, 4
+     * @return Matrix[] of the 4 quadrants
+     */
+    public Matrix[] getEfficientQuadrants(){
+        if (quadrants != null){
+            return quadrants;
+        }
+        int n = this.length;
+        int halfN = n / 2;
+        Matrix quad2 = new Matrix(this, halfN, start_row, start_col);
+        Matrix quad1 = new Matrix(this, halfN, start_row, start_col + halfN);
+        Matrix quad3 = new Matrix(this, halfN, start_row + halfN, start_col);
+        Matrix quad4 = new Matrix(this, halfN, start_row + halfN, start_col + halfN);
+
+        quadrants = new Matrix[]{quad2, quad1, quad3, quad4};
         return quadrants;
     }
 
