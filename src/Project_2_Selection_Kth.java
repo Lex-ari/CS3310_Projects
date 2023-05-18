@@ -6,26 +6,68 @@ import java.util.Arrays;
 
 public class Project_2_Selection_Kth {
 
-    public static void main(String[] args){
-        //int[] testing_array = new int[]{10, 9, 8, 3, 6, 5, 4, 7, 2, 1};
-        //array = testing_array;
-        //System.out.println("Algoirthm 1: " + Algo1(5));
-        //System.out.println("Algoirthm 2: " + Algo2(testing_array, testing_array.length, 2));
-        //System.out.println("testing: " + Arrays.toString(testing_array));
-        ////System.out.println("Algoirthm 3: " + Select2(testing_array, 10, 5));
+    public static void main(String[] args) throws IOException {
+
+        // Initial Testing Case
+        /*
+        int[] testing_array = new int[]{10, 9, 8, 3, 6, 5, 4, 7, 2, 1};
+        System.out.println("Testing Array: " + Arrays.toString(testing_array));
         for (int i = 0; i < 10; i++){
-            int[] testing_array = new int[]{10, 9, 8, 3, 6, 5, 4, 7, 2, 1};
-            //array = testing_array;
-            System.out.println("Algoirthm 1: " + Algo1(testing_array, i));
-            System.out.println("i: " + i);
+            ////array = testing_array;
+            System.out.println("i: " + i + " expected answer: " + (i + 1));
+            //System.out.println("Algoirthm 1: " + Algo1(testing_array, i));
+            //System.out.println("Algoirthm 2: " + Algo1(testing_array, i));
+            System.out.println("Algoirthm 3: " + Algo1(testing_array, i));
+        }*/
+
+        CustomFileWriter2 sizeLog = new CustomFileWriter2("sizeLog");
+        CustomFileWriter2 algo1timeLog = new CustomFileWriter2("algo1timeLog");
+        CustomFileWriter2 algo2timeLog = new CustomFileWriter2("algo2timeLog");
+        CustomFileWriter2 algo3timeLog = new CustomFileWriter2("algo3timeLog");
+        while (true){
+            doTestCases((10), 10);
         }
 
-        //System.out.println("Array: " + Arrays.toString(array));
     }
 
-    static int[] array;
-    static int[] utemparray;
+    public static long[] doTestCases(int n, int numTests){
+        try {
+            long[] algo1_time = new long[numTests];
+            long[] algo2_time = new long[numTests];
+            long[] algo3_time = new long[numTests];
 
+            for (int i = 0; i < numTests; i++){
+                int[] testArray = new int[n];
+                for (int j = 0; j < n; j++){
+                    testArray[j] = (int)(Math.random() * 2147483647);
+                }
+                int kth = (int)(Math.random() * n);
+                //System.out.println("Test array: " + Arrays.toString(testArray));
+                int ans;
+
+                long startTime = System.currentTimeMillis();
+
+                ans = Algo1(testArray, kth);
+                algo1_time[i] = System.currentTimeMillis() - startTime;
+                System.out.println("Algorithm 1 took " + algo1_time[i] + " for i = " + i);
+                startTime = System.currentTimeMillis();
+
+                ans = Algo2(testArray, n, kth);
+                algo1_time[i] = System.currentTimeMillis() - startTime;
+                System.out.println("Algorithm 1 took " + algo1_time[i] + " for i = " + i);
+                startTime = System.currentTimeMillis();
+
+                ans = Select2(testArray, n, kth);
+                algo1_time[i] = System.currentTimeMillis() - startTime;
+                System.out.println("Algorithm 1 took " + algo1_time[i] + " for i = " + i);
+            }
+            return new long[]{getTrialAverage(algo1_time), getTrialAverage(algo2_time), getTrialAverage(algo3_time)};
+
+        } catch (Exception e){
+            System.out.println("Test Failed " + e);
+        }
+        return null;
+    }
 
     public static long getTrialAverage(long[] timeTrials){
         long max = timeTrials[0];
