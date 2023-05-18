@@ -9,7 +9,8 @@ public class Project_2_Selection_Kth {
     public static void main(String[] args){
         int[] testing_array = new int[]{10, 9, 8, 3, 6, 5, 4, 7, 2, 1};
         array = testing_array;
-        System.out.println("Algoirthm 1: " + Algo2(testing_array, testing_array.length - 1, 1));
+        System.out.println("Algoirthm 1: " + Algo1(5));
+        System.out.println("Algoirthm 2: " + Algo2(testing_array, testing_array.length, 1));
         System.out.println("Array: " + Arrays.toString(array));
     }
 
@@ -37,7 +38,7 @@ public class Project_2_Selection_Kth {
 
     static int Algo1(int kth){
         MergeSort(0, array.length - 1);
-        return array[kth];
+        return array[kth - 1];
     }
 
     static void MergeSort(int low, int high){
@@ -87,7 +88,8 @@ public class Project_2_Selection_Kth {
 
     static int Algo2(int[] A, int n, int k){
         int m = 0;
-        int j = n;
+        int j = n - 1;
+        k = k-1;
         while (true){
             int pivotposition = Partition(A, m, j);
             if (k == pivotposition){
@@ -96,7 +98,7 @@ public class Project_2_Selection_Kth {
                 j = pivotposition - 1;
             } else {
                 m = pivotposition + 1;
-                k = k - pivotposition;
+                //k = k - pivotposition;
             }
         }
     }
