@@ -7,11 +7,22 @@ import java.util.Arrays;
 public class Project_2_Selection_Kth {
 
     public static void main(String[] args){
-        int[] testing_array = new int[]{10, 9, 8, 3, 6, 5, 4, 7, 2, 1};
-        array = testing_array;
-        System.out.println("Algoirthm 1: " + Algo1(5));
-        System.out.println("Algoirthm 2: " + Algo2(testing_array, testing_array.length, 1));
-        System.out.println("Array: " + Arrays.toString(array));
+        //int[] testing_array = new int[]{10, 9, 8, 3, 6, 5, 4, 7, 2, 1};
+        //array = testing_array;
+        //System.out.println("Algoirthm 1: " + Algo1(5));
+        //System.out.println("Algoirthm 2: " + Algo2(testing_array, testing_array.length, 6));
+        //System.out.println("Algoirthm 3: " + Select2(testing_array, 10, 5));
+        for (int i = 0; i < 10; i++){
+            try{
+                int[] testing_array = new int[]{10, 9, 8, 3, 6, 5, 4, 7, 2, 1};
+                System.out.println("Algoirthm 3: " + Select2(testing_array, 10, i));
+                System.out.println("i: " + i);
+            } catch (Exception exception){
+
+            }
+        }
+
+        //System.out.println("Array: " + Arrays.toString(array));
     }
 
     static int[] array;
@@ -106,12 +117,12 @@ public class Project_2_Selection_Kth {
     static int Partition(int[] partition_array, int low, int high){
         int v = partition_array[low];
         int j = low;
-        for (int i = low + 1; i <= high; i++){
+        for (int i = low + 1; i < high; i++){
             if (partition_array[i] < v) {
-                j++;
                 int holder = partition_array[i];
                 partition_array[i] = partition_array[j];
                 partition_array[j] = holder;
+                j++;
 
             }
         }
@@ -122,23 +133,53 @@ public class Project_2_Selection_Kth {
         return pivotposition;
     }
 
-    static int r = 5;
+    static int PartitionSetPivot(int[] partition_array, int low, int high, int pivot){
+        //int holder = partition_array[low];
+        //partition_array[low] = pivot;
+        //partition_array[pivot_index] = holder;
+
+        int v = pivot;
+        int j = low;
+        int pivot_index = 0;
+        System.out.println("v: " + v + " part: " + Arrays.toString(partition_array));
+        for (int i = low; i < high; i++){
+            if (partition_array[i] < v) {
+                //System.out.println("Switched: " + partition_array[i] + " and " + partition_array[j]);
+                int holder = partition_array[i];
+                partition_array[i] = partition_array[j];
+                partition_array[j] = holder;
+                j++;
+            }
+            if (partition_array[i] == pivot){
+                pivot_index = i - 1;
+            }
+        }
+        int pivotposition = j;
+        //int holder = partition_array[pivotposition];
+        //partition_array[pivotposition] = pivot;
+        //partition_array[pivot_index] = holder;
+        //System.out.println("partition: " + Arrays.toString(partition_array));
+        return pivotposition;
+    }
+
+    static int r = 3;
 
     static int Select2(int[] A, int n, int k) {
         if (n < r) {
             Arrays.sort(A);
             return A[k];
         }
-
         int num_subsets = (int) Math.floor(n / r);
         int[] medians = new int[num_subsets];
         int index = 0;
         for (int i = 0; i < n; i += r) {
             int endindex = i + r;
-            if (endindex >= n) {
-                endindex = n - 1;
+            if (endindex > n) {
+                break;
+                //endindex = n - 1;
             }
             int[] temporaryArray = Arrays.copyOfRange(A, i, endindex);
+            Arrays.sort(temporaryArray);
             int median = temporaryArray[(temporaryArray.length - 1) / 2];
             medians[index] = median;
             index++;
@@ -146,15 +187,22 @@ public class Project_2_Selection_Kth {
 
         int v = Select2(medians, num_subsets, (int) Math.ceil(num_subsets / 2));
 
-        int pivotposition = Partition(A, 0, n);
 
+        int pivotposition = PartitionSetPivot(A, 0, n, v);
+        System.out.println();
+        System.out.println("########################");
+        System.out.println("n: " + n + " k: " + k + " v: " + v + " pivot: " + pivotposition);
+        System.out.println("A: " + Arrays.toString(A));
+        System.out.println("########################");
         if (k == pivotposition) {
             return v;
         } else if (k < pivotposition){
-            int[] S = Arrays.copyOfRange(A, 1, pivotposition - 1);
-            return Select2(S, pivotposition - 1, k);
+            int[] S = Arrays.copyOfRange(A, 0, pivotposition);
+            System.out.println("S: " + Arrays.toString(S));
+            return Select2(S, pivotposition, k);
         } else {
-            int[] R = Arrays.copyOfRange(A, pivotposition + 1, n);
+            int[] R = Arrays.copyOfRange(A, pivotposition, n);
+            System.out.println("R: " + Arrays.toString(R));
             return Select2(R, n-pivotposition, k-pivotposition);
         }
     }
