@@ -10,16 +10,14 @@ public class Project_2_Selection_Kth {
         //int[] testing_array = new int[]{10, 9, 8, 3, 6, 5, 4, 7, 2, 1};
         //array = testing_array;
         //System.out.println("Algoirthm 1: " + Algo1(5));
-        //System.out.println("Algoirthm 2: " + Algo2(testing_array, testing_array.length, 6));
-        //System.out.println("Algoirthm 3: " + Select2(testing_array, 10, 5));
+        //System.out.println("Algoirthm 2: " + Algo2(testing_array, testing_array.length, 2));
+        //System.out.println("testing: " + Arrays.toString(testing_array));
+        ////System.out.println("Algoirthm 3: " + Select2(testing_array, 10, 5));
         for (int i = 0; i < 10; i++){
-            try{
-                int[] testing_array = new int[]{10, 9, 8, 3, 6, 5, 4, 7, 2, 1};
-                System.out.println("Algoirthm 3: " + Select2(testing_array, 10, i));
-                System.out.println("i: " + i);
-            } catch (Exception exception){
-
-            }
+            int[] testing_array = new int[]{10, 9, 8, 3, 6, 5, 4, 7, 2, 1};
+            //array = testing_array;
+            System.out.println("Algoirthm 1: " + Algo1(testing_array, i));
+            System.out.println("i: " + i);
         }
 
         //System.out.println("Array: " + Arrays.toString(array));
@@ -47,31 +45,31 @@ public class Project_2_Selection_Kth {
         return sum / (timeTrials.length - 2);
     }
 
-    static int Algo1(int kth){
-        MergeSort(0, array.length - 1);
-        return array[kth - 1];
+    static int Algo1(int[] A, int kth){
+        MergeSort(A, 0, A.length - 1);
+        return A[kth];
     }
 
-    static void MergeSort(int low, int high){
+    static void MergeSort(int[] A, int low, int high){
         if (low < high){
             int mid = (int) Math.floor((low + high) / 2);
-            MergeSort(low, mid);
-            MergeSort(mid + 1, high);
-            Merge(low, mid, high);
+            MergeSort(A, low, mid);
+            MergeSort(A, mid + 1, high);
+            Merge(A, low, mid, high);
         }
     }
 
-    static void Merge(int low, int mid, int high){
+    static void Merge(int[] A, int low, int mid, int high){
         int i = low;
         int j = mid + 1;
         int k = low;
         int[] U = new int[high + 1];
         while (i <= mid && j <= high){
-            if (array[i] < array[j]){
-                U[k] = array[i];
+            if (A[i] < A[j]){
+                U[k] = A[i];
                 i++;
             } else {
-                U[k] = array[j];
+                U[k] = A[j];
                 j++;
             }
             k++;
@@ -79,29 +77,30 @@ public class Project_2_Selection_Kth {
 
         if (i > mid){
             while (j <= high){
-                U[k] = array[j];
+                U[k] = A[j];
                 k++;
                 j++;
             }
         } else {
             while (i <= mid){
-                U[k] = array[i];
+                U[k] = A[i];
                 k++;
                 i++;
             }
         }
 
         for (int p = low; p <= high; p++){
-            array[p] = U[p];
+            A[p] = U[p];
         }
-        System.out.println("Array: " + Arrays.toString(array));
+        //System.out.println("Array: " + Arrays.toString(array));
     }
 
     static int Algo2(int[] A, int n, int k){
         int m = 0;
         int j = n - 1;
-        k = k-1;
+        //k = k-1;
         while (true){
+            //System.out.println(k);
             int pivotposition = Partition(A, m, j);
             if (k == pivotposition){
                 return A[k];
@@ -117,19 +116,22 @@ public class Project_2_Selection_Kth {
     static int Partition(int[] partition_array, int low, int high){
         int v = partition_array[low];
         int j = low;
-        for (int i = low + 1; i < high; i++){
+        for (int i = low + 1; i <= high; i++){
             if (partition_array[i] < v) {
+                j++;
+                //System.out.println("Switched: " + partition_array[i] + " and " + partition_array[j]);
                 int holder = partition_array[i];
                 partition_array[i] = partition_array[j];
                 partition_array[j] = holder;
-                j++;
-
             }
         }
         int pivotposition = j;
+        //System.out.println("pivot position: " + j);
         int holder = partition_array[low];
         partition_array[low] = partition_array[pivotposition];
         partition_array[pivotposition] = holder;
+        //System.out.println("holder: " + holder);
+        //System.out.println("array :" + Arrays.toString(partition_array));
         return pivotposition;
     }
 
@@ -141,7 +143,7 @@ public class Project_2_Selection_Kth {
         int v = pivot;
         int j = low;
         int pivot_index = 0;
-        System.out.println("v: " + v + " part: " + Arrays.toString(partition_array));
+        //System.out.println("v: " + v + " part: " + Arrays.toString(partition_array));
         for (int i = low; i < high; i++){
             if (partition_array[i] < v) {
                 //System.out.println("Switched: " + partition_array[i] + " and " + partition_array[j]);
@@ -189,20 +191,20 @@ public class Project_2_Selection_Kth {
 
 
         int pivotposition = PartitionSetPivot(A, 0, n, v);
-        System.out.println();
+        /*System.out.println();
         System.out.println("########################");
         System.out.println("n: " + n + " k: " + k + " v: " + v + " pivot: " + pivotposition);
         System.out.println("A: " + Arrays.toString(A));
-        System.out.println("########################");
+        System.out.println("########################");*/
         if (k == pivotposition) {
             return v;
         } else if (k < pivotposition){
             int[] S = Arrays.copyOfRange(A, 0, pivotposition);
-            System.out.println("S: " + Arrays.toString(S));
+            //System.out.println("S: " + Arrays.toString(S));
             return Select2(S, pivotposition, k);
         } else {
             int[] R = Arrays.copyOfRange(A, pivotposition, n);
-            System.out.println("R: " + Arrays.toString(R));
+            //System.out.println("R: " + Arrays.toString(R));
             return Select2(R, n-pivotposition, k-pivotposition);
         }
     }
