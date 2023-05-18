@@ -24,8 +24,18 @@ public class Project_2_Selection_Kth {
         CustomFileWriter2 algo1timeLog = new CustomFileWriter2("algo1timeLog");
         CustomFileWriter2 algo2timeLog = new CustomFileWriter2("algo2timeLog");
         CustomFileWriter2 algo3timeLog = new CustomFileWriter2("algo3timeLog");
+        int n = 2;
         while (true){
-            doTestCases((10), 10);
+            long[] averages = doTestCases(n, 10);
+            System.out.println("==COMPLETED N = " + n + " ==");
+            sizeLog.write(n + "\n");
+            algo1timeLog.write(" " + averages[0] + "\n");
+            System.out.println(n + ": " + "Algorithm 1: " + averages[0]);
+            algo2timeLog.write(" " + averages[1] + "\n");
+            System.out.println(n + ": " + "Algorithm 2: " + averages[1]);
+            algo3timeLog.write(" " + averages[2] + "\n");
+            System.out.println(n + ": " + "Algorithm 3: " + averages[2]);
+            n = n << 1;
         }
 
     }
@@ -49,17 +59,18 @@ public class Project_2_Selection_Kth {
 
                 ans = Algo1(testArray, kth);
                 algo1_time[i] = System.currentTimeMillis() - startTime;
-                System.out.println("Algorithm 1 took " + algo1_time[i] + " for i = " + i);
+                //System.out.println("Algorithm 1 took " + algo1_time[i] + " for n = " + n);
                 startTime = System.currentTimeMillis();
 
                 ans = Algo2(testArray, n, kth);
-                algo1_time[i] = System.currentTimeMillis() - startTime;
-                System.out.println("Algorithm 1 took " + algo1_time[i] + " for i = " + i);
+                algo2_time[i] = System.currentTimeMillis() - startTime;
+                //System.out.println("Algorithm 2 took " + algo1_time[i] + " for n = " + n);
                 startTime = System.currentTimeMillis();
 
                 ans = Select2(testArray, n, kth);
-                algo1_time[i] = System.currentTimeMillis() - startTime;
-                System.out.println("Algorithm 1 took " + algo1_time[i] + " for i = " + i);
+                algo3_time[i] = System.currentTimeMillis() - startTime;
+                //System.out.println("Algorithm 3 took " + algo1_time[i] + " for n = " + n);
+
             }
             return new long[]{getTrialAverage(algo1_time), getTrialAverage(algo2_time), getTrialAverage(algo3_time)};
 
