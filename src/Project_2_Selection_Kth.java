@@ -7,7 +7,10 @@ import java.util.Arrays;
 public class Project_2_Selection_Kth {
 
     public static void main(String[] args){
-
+        int[] testing_array = new int[]{10, 9, 8, 3, 6, 5, 4, 7, 2, 1};
+        array = testing_array;
+        System.out.println("Algoirthm 1: " + Algo2(testing_array, testing_array.length - 1, 1));
+        System.out.println("Array: " + Arrays.toString(array));
     }
 
     static int[] array;
@@ -50,39 +53,45 @@ public class Project_2_Selection_Kth {
         int i = low;
         int j = mid + 1;
         int k = low;
-
+        int[] U = new int[high + 1];
         while (i <= mid && j <= high){
             if (array[i] < array[j]){
-                utemparray[k] = array[i];
+                U[k] = array[i];
                 i++;
             } else {
-                utemparray[k] = array[j];
+                U[k] = array[j];
                 j++;
             }
+            k++;
         }
 
         if (i > mid){
-            for (int index = j; index < high; index++){
-                utemparray[index] = array[index];
+            while (j <= high){
+                U[k] = array[j];
+                k++;
+                j++;
             }
         } else {
-            for (int index = i; index < mid; index++){
-                utemparray[index] = array[index];
+            while (i <= mid){
+                U[k] = array[i];
+                k++;
+                i++;
             }
         }
 
-        for (int p = low; p < high; p++){
-            array[p] = utemparray[p];
+        for (int p = low; p <= high; p++){
+            array[p] = U[p];
         }
+        System.out.println("Array: " + Arrays.toString(array));
     }
 
-    static int Algo2(int n, int k){
-        int m = 1;
+    static int Algo2(int[] A, int n, int k){
+        int m = 0;
         int j = n;
         while (true){
-            int pivotposition = Partition(array, m, j);
+            int pivotposition = Partition(A, m, j);
             if (k == pivotposition){
-                return array[k];
+                return A[k];
             } else if (k < pivotposition){
                 j = pivotposition - 1;
             } else {
@@ -95,12 +104,13 @@ public class Project_2_Selection_Kth {
     static int Partition(int[] partition_array, int low, int high){
         int v = partition_array[low];
         int j = low;
-        for (int i = low + 1; low <= high; low++){
-            if (partition_array[i] < v){
+        for (int i = low + 1; i <= high; i++){
+            if (partition_array[i] < v) {
                 j++;
                 int holder = partition_array[i];
                 partition_array[i] = partition_array[j];
                 partition_array[j] = holder;
+
             }
         }
         int pivotposition = j;
@@ -148,7 +158,7 @@ public class Project_2_Selection_Kth {
     }
 }
 
-class CustomFileWriter {
+class CustomFileWriter2 {
     File file;
     FileWriter fileWriter;
 
@@ -157,7 +167,7 @@ class CustomFileWriter {
      * @param name
      * @throws IOException
      */
-    public CustomFileWriter(String name) throws IOException {
+    public CustomFileWriter2(String name) throws IOException {
         try {
             file = new File(name + ".txt");
             if (file.createNewFile()) {
