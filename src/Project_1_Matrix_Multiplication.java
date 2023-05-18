@@ -42,6 +42,7 @@ public class Project_1_Matrix_Multiplication {
         int n = 2;
         while (true){
             long[] averages = doTestCases(n, 10);
+            System.out.println("==COMPLETED N = " + n + " ==");
             traditionalLog.write(n + ": " + averages[0] + "\n");
             System.out.println(n + ": " + "traditional: " + averages[0]);
             dAndCLog.write(n + ": " + averages[1] + "\n");
@@ -71,14 +72,17 @@ public class Project_1_Matrix_Multiplication {
 
                 c = traditional_matrix_multiplication(a, b);
                 traditional_time[i] = System.currentTimeMillis() - startTime;
+                System.out.println("Traditional Received:" + traditional_time[i]);
                 startTime = System.currentTimeMillis();
 
                 c = divide_and_conquer(a, b);
                 dAndC_time[i] = System.currentTimeMillis() - startTime;
+                System.out.println("dAndC Received:" + dAndC_time[i]);
                 startTime = System.currentTimeMillis();
 
                 c = strassen(a, b);
                 strassen_time[i] = System.currentTimeMillis() - startTime;
+                System.out.println("Strassen Received:" + strassen_time[i]);
             }
             return new long[]{getTrialAverage(traditional_time), getTrialAverage(dAndC_time), getTrialAverage(strassen_time)};
 
@@ -239,7 +243,7 @@ class Matrix {
         if (!isEmpty){
             for (int row = 0; row < n; row++){
                 for (int col = 0; col < n; col++){
-                    data[row][col] = (int)(Math.random() * 11);     //Random number between 0-10
+                    data[row][col] = (int)(Math.random() * 101);     //Random number between 0-10
                 }
             }
         }
